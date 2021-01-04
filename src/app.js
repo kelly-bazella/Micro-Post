@@ -1,10 +1,37 @@
-// common JS module syntax
-// const person = require('./mymodule1');
-//ES2015 module
-import { person, sayHello } from './mymodule2';
+import { http } from './http';
+import { ui } from './ui'
+
+// get posts on DOM load
+document.addEventListener('DOMContentLoaded', getPosts);
+
+// listen for add post
+document.querySelector('.post-submit').addEventListener('click', submitPost);
 
 
+function getPosts(){
+  http.get('http://localhost:3000/posts')
+  .then(data => ui.showPosts(data))
+  .catch(err => console.log(err))
+}
 
-console.log(person.name)
+// Submit post
+function submitPost(){
+  const title = document.querySelector('#title').value;
+  
+  const body = document.querySelector('#body').value;
 
-console.log(sayHello())
+  const data = {
+    title,
+    body
+  }
+  console.log(data)
+
+  // create post
+  http.post('http://localhost:3000/posts', data)
+  .then(data => {
+    ui.showAlert("Post Added", "alert alert-success");
+    ui.clearFields();
+    getPosts();
+  })
+  .catch(err => console.log(err))
+};
